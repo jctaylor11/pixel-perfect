@@ -24,8 +24,8 @@ def grid_draw(input_path, block_size, output_path):
 
 if __name__ == "__main__":
     # For testing
-    INPUT_PATH = './sprite_cropped.png'
+    INPUT_PATH = 'inputs/sprite_cropped.png'
     BLOCK_SIZE = 13
-    OUTPUT_PATH = './grid_output.png'
+    OUTPUT_PATH = 'outputs/grid_output.png'
 
     grid_draw(INPUT_PATH, BLOCK_SIZE, OUTPUT_PATH)
