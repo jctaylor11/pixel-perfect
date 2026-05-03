@@ -2,7 +2,7 @@ from PIL import Image, ImageDraw
 
 
 def grid_draw(input_path, block_size, output_path):
-    GRID_RGBA = (255, 0, 0, 120)
+    GRID_RGBA = (0, 255, 0, 120)
 
     img = Image.open(input_path)
     img = img.convert("RGBA")     # To ensure it's mode matches grid_overlay's
