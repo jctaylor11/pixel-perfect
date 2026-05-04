@@ -20,12 +20,3 @@ def grid_draw(input_path, block_size, output_path):
     img_with_grid = Image.alpha_composite(img, grid_overlay)
     img_with_grid.save(output_path)
     print(f"Image with grid saved to {output_path}")
-
-
-if __name__ == "__main__":
-    # For testing
-    INPUT_PATH = 'inputs/sprite_cropped.png'
-    BLOCK_SIZE = 13
-    OUTPUT_PATH = 'outputs/grid_output.png'
-
-    grid_draw(INPUT_PATH, BLOCK_SIZE, OUTPUT_PATH)

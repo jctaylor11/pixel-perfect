@@ -37,9 +37,3 @@ def sample_blocks(input_path, block_size):
 
     return new_blocks
 
-
-if __name__ == "__main__":
-    INPUT_PATH = 'inputs/sprite_cropped.png'
-    BLOCK_SIZE = 10
-
-    sample_blocks(INPUT_PATH, BLOCK_SIZE)

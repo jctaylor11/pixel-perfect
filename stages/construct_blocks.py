@@ -1,8 +1,8 @@
 from PIL import Image
 import numpy as np
 
-from pipeline.sample_blocks import sample_blocks
-from pipeline.draw_grid import grid_draw
+from stages.sample_blocks import sample_blocks
+from stages.draw_grid import grid_draw
 
 
 def construct_blocks(block_array, block_size, output_path):
@@ -23,11 +23,4 @@ def construct_blocks(block_array, block_size, output_path):
     grid_draw(output_path, block_size, grid_output_path)
             
 
-if __name__ == "__main__":
-    INPUT_PATH = "inputs/sprite_cropped.png"
-    BLOCK_SIZE = 13
-    OUTPUT_PATH = "outputs/reconstruction.png"
-
-    new_blocks = sample_blocks(INPUT_PATH, BLOCK_SIZE)
-    construct_blocks(new_blocks, BLOCK_SIZE, OUTPUT_PATH)
     
