@@ -4,9 +4,8 @@ from collections import Counter
 import math
 
 
-def sample_blocks(input_path, block_size): 
-    img = Image.open(input_path)
-    img = img.convert('RGBA')
+def sample_blocks(input_img, block_size): 
+    img = input_img.convert('RGBA')
 
     img_arr = np.array(img)
     height, width, _ = img_arr.shape
@@ -31,9 +30,6 @@ def sample_blocks(input_path, block_size):
 
             # 3D array represents the colour for each block of size block_size
             new_blocks[row_index][col_index] = most_common_pixel
-
-    print(new_blocks)
-    print(new_blocks.shape)
 
     return new_blocks
 

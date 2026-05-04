@@ -3,20 +3,45 @@ from PIL import Image
 from stages.find_bounds import find_bounds, crop_image
 from stages.sample_blocks import sample_blocks
 from stages.construct_blocks import construct_blocks
-from config import INPUT_PATH, CROPPED_PATH, OUTPUT_PATH, BLOCK_SIZE
+from stages.draw_grid import grid_draw
+from config import INPUT_FILE, BLOCK_SIZE
 
 
-def pipeline(input_path, cropped_path, output_path, block_size):
+def pipeline(input_file, block_size):
+    input_path = './inputs/' + input_file
+
     img = Image.open(input_path)
     img = img.convert('RGBA')
 
     image_bounds = find_bounds(img)
-    cropped_path = crop_image(img, image_bounds, cropped_path)
+    cropped_img = crop_image(img, image_bounds)
 
-    new_blocks_array = sample_blocks(cropped_path, block_size)
+    new_blocks_array = sample_blocks(cropped_img, block_size)
 
-    construct_blocks(new_blocks_array, block_size, output_path)
+    reconstructed_img = construct_blocks(new_blocks_array, block_size)
+
+    ## Outputs ## 
+
+    # Original image cropped
+    cropped_path = "./outputs/" + "cropped_" + input_file
+    cropped_img.save(cropped_path)
+
+    # Original image cropped with grid
+    cropped_grid_path = "./outputs/" + "grid_" + input_file
+    cropped_with_grid = grid_draw(cropped_img, block_size)
+    cropped_with_grid.save(cropped_grid_path)
+    
+    # Final reconstructed image
+    final_image_path = './outputs/' + "reconstructed_" + input_file
+    reconstructed_img.save(final_image_path)
+
+    # Reconstructed image with grid
+    final_grid_path = './outputs/' + "reconstructed_grid_" + input_file
+    reconstructed_with_grid = grid_draw(reconstructed_img, block_size)
+    reconstructed_with_grid.save(final_grid_path)
+
+
 
 
 if __name__ == "__main__":
-    pipeline(INPUT_PATH, CROPPED_PATH, OUTPUT_PATH, BLOCK_SIZE)
+    pipeline(INPUT_FILE, BLOCK_SIZE)

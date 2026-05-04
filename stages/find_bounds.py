@@ -49,9 +49,8 @@ def find_bounds(img):
     return (left, top, right, bottom)
 
 
-def crop_image(img, bounds, output_path):
+def crop_image(img, bounds):
     left, top, right, bottom = bounds
-    cropped = img.crop((left, top, right + 1, bottom + 1))
-    cropped.save(output_path)
+    cropped_img = img.crop((left, top, right + 1, bottom + 1))
 
-    return output_path
+    return cropped_img  # Returns image object for caller to decide to save

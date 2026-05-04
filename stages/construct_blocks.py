@@ -1,11 +1,8 @@
 from PIL import Image
 import numpy as np
 
-from stages.sample_blocks import sample_blocks
-from stages.draw_grid import grid_draw
 
-
-def construct_blocks(block_array, block_size, output_path):
+def construct_blocks(block_array, block_size):
     blocks_rows, blocks_cols, _ = block_array.shape
 
     reconstruction = np.zeros((blocks_rows * block_size, blocks_cols * block_size, 4), dtype=np.uint8)
@@ -16,11 +13,10 @@ def construct_blocks(block_array, block_size, output_path):
             pixel_col = col * block_size
             reconstruction[pixel_row:pixel_row+block_size, pixel_col:pixel_col+block_size, :] = block_array[row][col]
 
-    reconstructed = Image.fromarray(reconstruction)
-    reconstructed.save(output_path)
+    reconstructed_img = Image.fromarray(reconstruction)
+    
+    return reconstructed_img
 
-    grid_output_path = output_path[:-4] + "_grid.png"
-    grid_draw(output_path, block_size, grid_output_path)
             
 
     

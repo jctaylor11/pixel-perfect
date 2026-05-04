@@ -1,11 +1,10 @@
 from PIL import Image, ImageDraw
 
 
-def grid_draw(input_path, block_size, output_path):
+def grid_draw(input_img, block_size):
     GRID_RGBA = (0, 255, 0, 120)
 
-    img = Image.open(input_path)
-    img = img.convert("RGBA")     # To ensure it's mode matches grid_overlay's
+    img = input_img.convert("RGBA")     # To ensure it's mode matches grid_overlay's
 
     grid_overlay = Image.new("RGBA", img.size, (0, 0, 0, 0))     # Starting with fully transparent overlay
     draw = ImageDraw.Draw(grid_overlay)
@@ -16,7 +15,6 @@ def grid_draw(input_path, block_size, output_path):
     for y in range(0, height, block_size):
         draw.line(([0, y], [width, y]), fill=GRID_RGBA, width=1)
 
-    # Overlaying grid for visual assessment for now
     img_with_grid = Image.alpha_composite(img, grid_overlay)
-    img_with_grid.save(output_path)
-    print(f"Image with grid saved to {output_path}")
+
+    return img_with_grid
