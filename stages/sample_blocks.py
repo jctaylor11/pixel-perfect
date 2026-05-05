@@ -14,7 +14,14 @@ def sample_most_common(block):
     return most_common
 
 
-def sample_blocks(cropped_img, block_size, sampler=sample_center):
+def sample_most_common_bucketed(block, bucket_size=16):
+    bucketed = (block // bucket_size) * bucket_size     
+    pixel_tuples = map(tuple, bucketed.reshape(-1, 4))
+    most_common, _ = Counter(pixel_tuples).most_common(1)[0]
+    return most_common
+
+
+def sample_blocks(cropped_img, block_size, sampler=sample_most_common_bucketed):
     img = cropped_img.convert('RGBA')
 
     img_arr = np.array(img)
