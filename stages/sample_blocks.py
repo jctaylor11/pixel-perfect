@@ -40,7 +40,33 @@ def sample_inner_weighted(block):
     return tuple((weighted_sum / total_weight).round().astype(np.uint8))
 
 
-def sample_blocks(cropped_img, block_size, sampler=sample_inner_weighted):
+def sample_palette_proximity(block, bucket_size=16):
+    height, width, _ = block.shape
+    row_trim = max(1, int(height * 0.2))
+    col_trim = max(1, int(width * 0.2))
+    inner = block[row_trim:height - row_trim, col_trim:width - col_trim]
+    if inner.size == 0:
+        inner = block
+
+    pixels = inner.reshape(-1, 4).astype(np.float64)
+    centroids = (pixels // bucket_size) * bucket_size
+
+    best_score = -1
+    best_centroid = None
+    for centroid in np.unique(centroids, axis=0):
+        mask = np.all(centroids == centroid, axis=1)
+        count = mask.sum()
+        mean_distance = np.linalg.norm(pixels[mask] - centroid, axis=1).mean()
+        score = (count ** 2) / (mean_distance + 1)
+        if score > best_score:
+            best_score = score
+            best_centroid = centroid
+
+    distances_to_best = np.linalg.norm(pixels - best_centroid, axis=1)
+    return tuple(pixels[np.argmin(distances_to_best)].round().astype(np.uint8))
+
+
+def sample_blocks(cropped_img, block_size, sampler=sample_palette_proximity):
     img = cropped_img.convert('RGBA')
 
     img_arr = np.array(img)
