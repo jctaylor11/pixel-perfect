@@ -3,11 +3,12 @@ import argparse
 
 from stages.find_bounds import find_bounds, crop_image
 from stages.sample_blocks import sample_blocks
+from stages.quantise_colours import quantise_colours
 from stages.construct_blocks import construct_blocks
 from stages.draw_grid import grid_draw
 import config
 
-def pipeline(input_file, block_size):
+def pipeline(input_file, block_size, n_colours):
     input_path = './inputs/' + input_file
 
     img = Image.open(input_path)
@@ -16,9 +17,11 @@ def pipeline(input_file, block_size):
     image_bounds = find_bounds(img)
     cropped_img = crop_image(img, image_bounds)
 
-    new_blocks_array = sample_blocks(cropped_img, block_size)
+    blocks_array = sample_blocks(cropped_img, block_size)
 
-    reconstructed_img = construct_blocks(new_blocks_array, block_size)
+    quantized_blocks = quantise_colours(blocks_array, n_colours)
+
+    reconstructed_img = construct_blocks(quantized_blocks, block_size)
 
     ## Outputs ## 
 
@@ -48,9 +51,11 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--block_size", type=int, default=config.BLOCK_SIZE)
     parser.add_argument("--input_file", type=str, default=config.INPUT_FILE)
+    parser.add_argument("--n_colours", type=int, default=config.N_COLOURS)
     args = parser.parse_args()
 
     INPUT_FILE = args.input_file
     BLOCK_SIZE = args.block_size
+    N_COLOURS = args.n_colours
 
-    pipeline(INPUT_FILE, BLOCK_SIZE)
+    pipeline(INPUT_FILE, BLOCK_SIZE, N_COLOURS)

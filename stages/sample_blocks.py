@@ -66,7 +66,7 @@ def sample_palette_proximity(block, bucket_size=16):
     return tuple(pixels[np.argmin(distances_to_best)].round().astype(np.uint8))
 
 
-def sample_blocks(cropped_img, block_size, sampler=sample_palette_proximity):
+def sample_blocks(cropped_img, block_size, sampler=sample_center):
     img = cropped_img.convert('RGBA')
 
     img_arr = np.array(img)
