@@ -3,6 +3,39 @@ import numpy as np
 from config import ALPHA_THRESHOLD
 
 
+def initialise_centroids(opaque_pixels, num_colours):
+    """Initiliase centroids with k-means++"""
+    idx = np.random.randint(len(opaque_pixels))
+    centroids = [opaque_pixels[idx]]
+
+    # Pixels further away from a centroid should be more likely to become a centroid
+    for _ in range(num_colours - 1):
+        sq_distances = np.min([np.sum((opaque_pixels - centroid) ** 2, axis = 1) for centroid in centroids], axis=0)
+        probabilities = sq_distances / sq_distances.sum()
+
+        idx = np.random.choice(len(opaque_pixels), p=probabilities)
+        centroids.append(opaque_pixels[idx])
+
+    centroids = np.array(centroids, dtype=np.float64)
+
+    return centroids
+
+
+def update_centroids(opaque_pixels, centroids, labels, num_colours):
+    """Find new centroids based on current clusters"""
+    new_centroids = []
+    for k in range(num_colours):
+        pixels_assigned_to_k = opaque_pixels[labels == k]
+        if len(pixels_assigned_to_k) > 0:
+            new_centroids.append(pixels_assigned_to_k.mean(axis=0))
+        else:
+            new_centroids.append(centroids[k])  # To ensure all centroids have assigned pixels
+
+    new_centroids = np.array(new_centroids)
+
+    return new_centroids
+
+
 def assign_labels(opaque_pixels, centroids):
     """Finds the centroid closest to each pixel"""
     # opaque_pixels.shape is (num_pixels, 3). centroids.shape is (k, 3). To take norm, the final shape should be (num_pixels, k, 3), one pixel for each k
@@ -26,32 +59,12 @@ def quantise_colours(pixels, num_colours, max_iterations=100):
     if len(unique_colours) <= num_colours:
         return pixels
 
-    # Initialise centroids using kmeans++
-    idx = np.random.randint(len(opaque_pixels))
-    centroids = [opaque_pixels[idx]]
+    centroids = initialise_centroids(opaque_pixels, num_colours)
 
-    # Pixels further away from a centroid should be more likely to become a centroid
-    for _ in range(num_colours - 1):
-        sq_distances = np.min([np.sum((opaque_pixels - centroid) ** 2, axis = 1) for centroid in centroids], axis=0)
-        probabilities = sq_distances / sq_distances.sum()
-
-        idx = np.random.choice(len(opaque_pixels), p=probabilities)
-        centroids.append(opaque_pixels[idx])
-
-    centroids = np.array(centroids, dtype=np.float64)
     for iteration in range(max_iterations):
         closest_centroid_labels = assign_labels(opaque_pixels, centroids)
 
-        ## Find new centroids based on current clusters
-        new_centroids = []
-        for k in range(num_colours):
-            pixels_assigned_to_k = opaque_pixels[closest_centroid_labels == k]
-            if len(pixels_assigned_to_k) > 0:
-                new_centroids.append(pixels_assigned_to_k.mean(axis=0))
-            else:
-                new_centroids.append(centroids[k])  # If the new centroid has no assigned pixels, it uses the old centroid
-
-        new_centroids = np.array(new_centroids)
+        new_centroids = update_centroids(opaque_pixels, centroids, closest_centroid_labels, num_colours)
         
         # If old and new centroids are similar, there is convergence
         if np.allclose(centroids, new_centroids):
