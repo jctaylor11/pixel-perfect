@@ -5,12 +5,10 @@ from stages.find_bounds import find_bounds, crop_image
 from stages.sample_blocks import sample_blocks
 from stages.quantise_colours import quantise_colours
 from stages.construct_blocks import construct_blocks
-from stages.draw_grid import grid_draw
+from stages.save_outputs import save_outputs
 import config
 
-def pipeline(input_file, block_size, n_colours):
-    input_path = './inputs/' + input_file
-
+def pipeline(input_path, block_size, n_colours):
     img = Image.open(input_path)
     img = img.convert('RGBA')
 
@@ -18,44 +16,22 @@ def pipeline(input_file, block_size, n_colours):
     cropped_img = crop_image(img, image_bounds)
 
     blocks_array = sample_blocks(cropped_img, block_size)
-
     quantized_blocks = quantise_colours(blocks_array, n_colours)
-
     reconstructed_img = construct_blocks(quantized_blocks, block_size)
 
-    ## Outputs ## 
-
-    # Original image cropped
-    cropped_path = "./outputs/" + "cropped_" + input_file
-    cropped_img.save(cropped_path)
-
-    # Original image cropped with grid
-    cropped_grid_path = "./outputs/" + "grid_" + input_file
-    cropped_with_grid = grid_draw(cropped_img, block_size)
-    cropped_with_grid.save(cropped_grid_path)
-    
-    # Reconstructed image
-    final_image_path = './outputs/' + "reconstructed_" + input_file
-    reconstructed_img.save(final_image_path)
-
-    # Reconstructed image with grid
-    final_grid_path = './outputs/' + "reconstructed_grid_" + input_file
-    reconstructed_with_grid = grid_draw(reconstructed_img, block_size)
-    reconstructed_with_grid.save(final_grid_path)
-
-
+    save_outputs(input_path, cropped_img, block_size, reconstructed_img)
 
 
 if __name__ == "__main__":
     # CLI args make it easy to compare changes between block sizes without going back into the config file
     parser = argparse.ArgumentParser()
     parser.add_argument("--block_size", type=int, default=config.BLOCK_SIZE)
-    parser.add_argument("--input_file", type=str, default=config.INPUT_FILE)
+    parser.add_argument("--input_path", type=str, default=config.INPUT_PATH)
     parser.add_argument("--n_colours", type=int, default=config.N_COLOURS)
     args = parser.parse_args()
 
-    INPUT_FILE = args.input_file
+    INPUT_PATH = args.input_path
     BLOCK_SIZE = args.block_size
     N_COLOURS = args.n_colours
 
-    pipeline(INPUT_FILE, BLOCK_SIZE, N_COLOURS)
+    pipeline(INPUT_PATH, BLOCK_SIZE, N_COLOURS)
