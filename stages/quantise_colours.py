@@ -57,6 +57,8 @@ def quantise_colours(pixels, num_colours, max_iterations=100):
 
     unique_colours = np.unique(opaque_pixels, axis=0)
     if len(unique_colours) <= num_colours:
+        pixels = pixels.copy()
+        pixels[opaque_mask, 3] = 255
         return pixels
 
     centroids = initialise_centroids(opaque_pixels, num_colours)
@@ -78,5 +80,8 @@ def quantise_colours(pixels, num_colours, max_iterations=100):
 
     quantised_pixels = pixels.copy()
     quantised_pixels[opaque_mask, :3] = quantised_rgb   # Maps the quantised pixels back into the opaque pixels
+
+    quantised_pixels[opaque_mask, 3] = 255
+    quantised_pixels[~opaque_mask, 3] = 0
 
     return quantised_pixels
