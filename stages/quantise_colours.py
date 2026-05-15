@@ -25,11 +25,20 @@ def quantise_colours(pixels, num_colours, max_iterations=100):
     unique_colours = np.unique(opaque_pixels, axis=0)
     if len(unique_colours) <= num_colours:
         return pixels
-        
-    # Initialise centroids
-    indices = np.random.choice(len(opaque_pixels), size=num_colours, replace=False)
-    centroids = opaque_pixels[indices].copy().astype(np.float64)  # Numpy fancy indexing
 
+    # Initialise centroids using kmeans++
+    idx = np.random.randint(len(opaque_pixels))
+    centroids = [opaque_pixels[idx]]
+
+    # Pixels further away from a centroid should be more likely to become a centroid
+    for _ in range(num_colours - 1):
+        sq_distances = np.min([np.sum((opaque_pixels - centroid) ** 2, axis = 1) for centroid in centroids], axis=0)
+        probabilities = sq_distances / sq_distances.sum()
+
+        idx = np.random.choice(len(opaque_pixels), p=probabilities)
+        centroids.append(opaque_pixels[idx])
+
+    centroids = np.array(centroids, dtype=np.float64)
     for iteration in range(max_iterations):
         closest_centroid_labels = assign_labels(opaque_pixels, centroids)
 
