@@ -1,5 +1,8 @@
 from PIL import Image
 import argparse
+from dotenv import load_dotenv
+
+load_dotenv()
 
 from stages.find_bounds import find_bounds, crop_image
 from stages.sample_blocks import sample_blocks
@@ -7,6 +10,7 @@ from stages.quantise_colours import quantise_colours
 from stages.construct_blocks import construct_blocks
 from stages.place_on_canvas import place_on_canvas
 from stages.save_outputs import save_outputs
+from stages.watermark_image import add_watermark
 import config
 
 def pipeline(input_path, block_size, n_colours, padding):
@@ -20,8 +24,9 @@ def pipeline(input_path, block_size, n_colours, padding):
     quantized_blocks = quantise_colours(blocks_array, n_colours)
     reconstructed_img = construct_blocks(quantized_blocks, block_size)
     canvas_img = place_on_canvas(reconstructed_img, padding)
+    watermarked_canvas_img = add_watermark(canvas_img)
 
-    save_outputs(input_path, cropped_img, block_size, reconstructed_img, canvas_img)
+    save_outputs(input_path, cropped_img, block_size, reconstructed_img, watermarked_canvas_img)
 
 
 
