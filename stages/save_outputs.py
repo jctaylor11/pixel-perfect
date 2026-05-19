@@ -8,7 +8,7 @@ def build_output_path(input_path, slug):
     return output_path
 
 
-def save_outputs(input_path, cropped_img, block_size, reconstructed_img):
+def save_outputs(input_path, cropped_img, block_size, reconstructed_img, canvas_img):
     # Original image cropped
     cropped_path = build_output_path(input_path, "cropped")
     cropped_img.save(cropped_path)
@@ -26,3 +26,8 @@ def save_outputs(input_path, cropped_img, block_size, reconstructed_img):
     reconstructed_grid_path = build_output_path(input_path, "reconstructed_grid")
     reconstructed_grid_img = grid_draw(reconstructed_img, block_size)
     reconstructed_grid_img.save(reconstructed_grid_path)
+
+    # Canvas
+    canvas_path = build_output_path(input_path, "canvas")
+    canvas_img.save(canvas_path)
+    
