@@ -24,12 +24,12 @@ def initialise_centroids(opaque_pixels, num_colours):
 def update_centroids(opaque_pixels, centroids, labels, num_colours):
     """Find new centroids based on current clusters"""
     new_centroids = []
-    for k in range(num_colours):
-        pixels_assigned_to_k = opaque_pixels[labels == k]
-        if len(pixels_assigned_to_k) > 0:
-            new_centroids.append(pixels_assigned_to_k.mean(axis=0))
+    for centroid_idx in range(num_colours):
+        cluster_pixels = opaque_pixels[labels == centroid_idx]
+        if len(cluster_pixels) > 0:
+            new_centroids.append(cluster_pixels.mean(axis=0))
         else:
-            new_centroids.append(centroids[k])  # To ensure all centroids have assigned pixels
+            new_centroids.append(centroids[centroid_idx])  # To ensure all centroids have assigned pixels
 
     new_centroids = np.array(new_centroids)
 
@@ -50,11 +50,11 @@ def assign_labels(opaque_pixels, centroids):
     return closest_centroid_labels
 
 
-def compute_centroids(pixels, num_colours, max_iterations=1000):
+def compute_centroids(block_colours, num_colours, max_iterations=1000):
     """Compute n centroids where n is given num_colours for a 2D array, and return the centroid RGB values"""
     # Opaque mask to neglect transparent pixels
-    opaque_mask = pixels[:, 3] >= ALPHA_THRESHOLD
-    opaque_pixels = pixels[opaque_mask, :3].astype(np.float64)  # Returns flattened array
+    opaque_mask = block_colours[:, 3] >= ALPHA_THRESHOLD
+    opaque_pixels = block_colours[opaque_mask, :3].astype(np.float64)  # Returns flattened array
 
     unique_colours = np.unique(opaque_pixels, axis=0)
     if len(unique_colours) <= num_colours:
@@ -63,7 +63,7 @@ def compute_centroids(pixels, num_colours, max_iterations=1000):
 
     centroids = initialise_centroids(opaque_pixels, num_colours)
 
-    for iteration in range(max_iterations):
+    for _ in range(max_iterations):
         closest_centroid_labels = assign_labels(opaque_pixels, centroids)
 
         new_centroids = update_centroids(opaque_pixels, centroids, closest_centroid_labels, num_colours)
@@ -77,20 +77,20 @@ def compute_centroids(pixels, num_colours, max_iterations=1000):
     return centroids
     
 
-def quantise_to_centroids(pixels, centroids):
+def quantise_to_centroids(block_colours, centroids):
     """Change the pixel colours to their closest centroid"""
-    opaque_mask = pixels[:, 3] >= ALPHA_THRESHOLD
-    opaque_pixels = pixels[opaque_mask, :3].astype(np.float64)
+    opaque_mask = block_colours[:, 3] >= ALPHA_THRESHOLD
+    opaque_block_colours = block_colours[opaque_mask, :3].astype(np.float64)
 
-    closest_centroid_labels = assign_labels(opaque_pixels, centroids)
+    closest_centroid_labels = assign_labels(opaque_block_colours, centroids)
     quantised_rgb = centroids[closest_centroid_labels].round().astype(np.uint8)     # Numpy fancy indexing
 
-    quantised_pixels = pixels.copy()
+    quantised_block_colours = block_colours.copy()
 
-    quantised_pixels[opaque_mask, :3] = quantised_rgb   # Maps the quantised pixels back into the opaque pixels. Two-axis fancy indexing (rows where mask is true, and first 3 or rgb)
-    quantised_pixels[~opaque_mask, :3] = 0
+    quantised_block_colours[opaque_mask, :3] = quantised_rgb   # Maps the quantised pixels back into the opaque pixels. Two-axis fancy indexing (rows where mask is true, and first 3 or rgb)
+    quantised_block_colours[~opaque_mask, :3] = 0
 
-    quantised_pixels[opaque_mask, 3] = 255
-    quantised_pixels[~opaque_mask, 3] = 0
+    quantised_block_colours[opaque_mask, 3] = 255
+    quantised_block_colours[~opaque_mask, 3] = 0
 
-    return quantised_pixels
+    return quantised_block_colours

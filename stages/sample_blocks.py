@@ -99,6 +99,6 @@ def sample_blocks(cropped_img, block_size, sampler=sample_center):
             block_pixels = pixel_arr[y_start:y_start+block_size, x_start:x_start+block_size]
             block_grid[block_row, block_col] = sampler(block_pixels)
 
-    flattened_blocks = block_grid.reshape(-1, 4)    # Array of sampled colours, one pixel RGBA per sprite block
+    block_colours = block_grid.reshape(-1, 4)    # Array of sampled colours, one pixel RGBA per sprite block
 
-    return flattened_blocks
+    return block_colours
