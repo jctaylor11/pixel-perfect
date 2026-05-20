@@ -67,19 +67,38 @@ def sample_palette_proximity(block, bucket_size=16):
 
 
 def sample_blocks(cropped_img, block_size, sampler=sample_center):
-    img = cropped_img.convert('RGBA')
+    """Downsample an upscaled sprite to its logical pixel grid.
 
-    img_arr = np.array(img)
-    height, width, _ = img_arr.shape
+    Divides the image into a grid of block_size × block_size patches and
+    reduces each patch to a single RGBA colour via the sampler. The result
+    is the sprite at its native resolution: one output pixel per sprite block.
 
-    num_blocks_height = math.ceil(height / block_size)
-    num_blocks_width = math.ceil(width / block_size)
+    Args: 
+        cropped_img: PIL Image cropped to sprite bounds
+        block_size: number of pixels per sprite block
+        sampler: function that determines each block's colours
 
-    new_blocks = np.zeros((num_blocks_height, num_blocks_width, 4), dtype=np.uint8)
+    Returns:
+        NDArray[np.uint8] of shape (num_blocks, 4)
+        
+        Each row is one sprite block's RGBA colour. 
+        Reshaping to (ceil(height / block_size), ceil(width / block_size), 4) recovers the 2D logical sprite.
+    """
+    rgba_img = cropped_img.convert('RGBA')
 
-    for row_index, row_pixel in enumerate(range(0, height, block_size)):
-        for col_index, col_pixel in enumerate(range(0, width, block_size)):
-            block = img_arr[row_pixel:row_pixel+block_size, col_pixel:col_pixel+block_size]
-            new_blocks[row_index][col_index] = sampler(block)
+    pixel_arr = np.array(rgba_img)
+    height, width, _ = pixel_arr.shape
 
-    return new_blocks
+    block_rows = math.ceil(height / block_size)
+    block_cols = math.ceil(width / block_size)
+
+    block_grid = np.zeros((block_rows, block_cols, 4), dtype=np.uint8)
+
+    for block_row, y_start in enumerate(range(0, height, block_size)):
+        for block_col, x_start in enumerate(range(0, width, block_size)):
+            block_pixels = pixel_arr[y_start:y_start+block_size, x_start:x_start+block_size]
+            block_grid[block_row, block_col] = sampler(block_pixels)
+
+    flattened_blocks = block_grid.reshape(-1, 4)    # Array of sampled colours, one pixel RGBA per sprite block
+
+    return flattened_blocks

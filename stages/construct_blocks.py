@@ -1,22 +1,24 @@
 from PIL import Image
 import numpy as np
+import math
 
 
-def construct_blocks(block_array, block_size):
-    blocks_rows, blocks_cols, _ = block_array.shape
+def construct_blocks(block_colours, block_size, cropped_shape):
+    """Reconstruct cropped image with quantised colours.
+    """
+    img_height, img_width = cropped_shape
+    blocks_rows = math.ceil(img_height / block_size)
+    blocks_cols = math.ceil(img_width / block_size)
 
-    reconstruction = np.zeros((blocks_rows * block_size, blocks_cols * block_size, 4), dtype=np.uint8)
+    block_grid = block_colours.reshape(blocks_rows, blocks_cols, 4)
+    output_pixels = np.zeros((blocks_rows * block_size, blocks_cols * block_size, 4), dtype=np.uint8)
 
-    for row in range(0, blocks_rows):
-        for col in range(0, blocks_cols):
-            pixel_row = row * block_size
-            pixel_col = col * block_size
-            reconstruction[pixel_row:pixel_row+block_size, pixel_col:pixel_col+block_size, :] = block_array[row][col]
+    for block_row in range(blocks_rows):
+        for block_col in range(blocks_cols):
+            y_start = block_row * block_size
+            x_start = block_col * block_size
+            output_pixels[y_start:y_start+block_size, x_start:x_start+block_size] = block_grid[block_row, block_col]
 
-    reconstructed_img = Image.fromarray(reconstruction)
-    
+    reconstructed_img = Image.fromarray(output_pixels)
+
     return reconstructed_img
-
-            
-
-    

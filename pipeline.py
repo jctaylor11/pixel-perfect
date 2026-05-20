@@ -6,7 +6,7 @@ load_dotenv()
 
 from stages.find_bounds import find_bounds, crop_image
 from stages.sample_blocks import sample_blocks
-from stages.quantise_colours import quantise_colours
+from stages.quantise_colours import compute_centroids, quantise_to_centroids
 from stages.construct_blocks import construct_blocks
 from stages.place_on_canvas import place_on_canvas
 from stages.save_outputs import save_outputs
@@ -19,16 +19,18 @@ def pipeline(input_path, block_size, n_colours, padding):
 
     image_bounds = find_bounds(img)
     cropped_img = crop_image(img, image_bounds)
+    cropped_img_shape = (cropped_img.height, cropped_img.width)     # PIL and Numpy use inverses for shape/size, so shape is manually set for numpy convention
 
-    blocks_array = sample_blocks(cropped_img, block_size)
-    quantized_blocks = quantise_colours(blocks_array, n_colours)
-    reconstructed_img = construct_blocks(quantized_blocks, block_size)
+    blocks_array = sample_blocks(cropped_img, block_size)   # Blocks array is array of sampled colours, one pixel RGBA per sprite block
+    centroids = compute_centroids(blocks_array, n_colours)
+    quantised_blocks = quantise_to_centroids(blocks_array, centroids)
+
+    reconstructed_img = construct_blocks(quantised_blocks, block_size, cropped_img_shape)
     canvas_img = place_on_canvas(reconstructed_img, padding)
     watermarked_canvas_img = add_watermark(canvas_img)
 
     save_outputs(input_path, cropped_img, block_size, reconstructed_img, watermarked_canvas_img)
-
-
+    
 
 if __name__ == "__main__":
     # CLI args make it easy to compare changes between block sizes without going back into the config file

@@ -50,16 +50,16 @@ def assign_labels(opaque_pixels, centroids):
     return closest_centroid_labels
 
 
-def quantise_colours(pixels, num_colours, max_iterations=100):
+def compute_centroids(pixels, num_colours, max_iterations=1000):
+    """Compute n centroids where n is given num_colours for a 2D array, and return the centroid RGB values"""
     # Opaque mask to neglect transparent pixels
-    opaque_mask = pixels[:, :, 3] >= ALPHA_THRESHOLD
+    opaque_mask = pixels[:, 3] >= ALPHA_THRESHOLD
     opaque_pixels = pixels[opaque_mask, :3].astype(np.float64)  # Returns flattened array
 
     unique_colours = np.unique(opaque_pixels, axis=0)
     if len(unique_colours) <= num_colours:
-        pixels = pixels.copy()
-        pixels[opaque_mask, 3] = 255
-        return pixels
+        centroids = unique_colours
+        return centroids
 
     centroids = initialise_centroids(opaque_pixels, num_colours)
 
@@ -74,12 +74,21 @@ def quantise_colours(pixels, num_colours, max_iterations=100):
 
         centroids = new_centroids
 
-    # Finding labels with converged centroids
+    return centroids
+    
+
+def quantise_to_centroids(pixels, centroids):
+    """Change the pixel colours to their closest centroid"""
+    opaque_mask = pixels[:, 3] >= ALPHA_THRESHOLD
+    opaque_pixels = pixels[opaque_mask, :3].astype(np.float64)
+
     closest_centroid_labels = assign_labels(opaque_pixels, centroids)
     quantised_rgb = centroids[closest_centroid_labels].round().astype(np.uint8)     # Numpy fancy indexing
 
     quantised_pixels = pixels.copy()
-    quantised_pixels[opaque_mask, :3] = quantised_rgb   # Maps the quantised pixels back into the opaque pixels
+
+    quantised_pixels[opaque_mask, :3] = quantised_rgb   # Maps the quantised pixels back into the opaque pixels. Two-axis fancy indexing (rows where mask is true, and first 3 or rgb)
+    quantised_pixels[~opaque_mask, :3] = 0
 
     quantised_pixels[opaque_mask, 3] = 255
     quantised_pixels[~opaque_mask, 3] = 0
