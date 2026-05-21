@@ -69,7 +69,7 @@ def sample_palette_proximity(block, bucket_size=16):
 def sample_blocks(cropped_img, block_size, sampler=sample_center):
     """Downsample an upscaled sprite to its logical pixel grid.
 
-    Divides the image into a grid of block_size × block_size patches and
+    Divides the image into a grid of block_size x block_size patches and
     reduces each patch to a single RGBA colour via the sampler. The result
     is the sprite at its native resolution: one output pixel per sprite block.
 
