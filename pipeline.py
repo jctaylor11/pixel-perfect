@@ -63,6 +63,12 @@ def pipeline_folder(folder_path, block_size, num_colours, padding):
         watermarked_img.save(output_filepath)
 
 
+def pipeline_folder_individual(folder_path, block_size, num_colours, padding):
+    for filename in os.listdir(folder_path):
+        filepath = os.path.join(folder_path, filename)
+        pipeline_image(filepath, block_size, num_colours, padding)
+
+
 def pipeline_image(input_path, block_size, num_colours, padding):
     img_raw = Image.open(input_path)
     img_rgba = img_raw.convert('RGBA')
@@ -99,6 +105,7 @@ if __name__ == "__main__":
     NUM_COLOURS = args.num_colours
     PADDING = args.padding
 
-    pipeline_image(INPUT_IMAGE, BLOCK_SIZE, NUM_COLOURS, PADDING)
+    # pipeline_image(INPUT_IMAGE, BLOCK_SIZE, NUM_COLOURS, PADDING)
     # pipeline_folder(INPUT_FOLDER, BLOCK_SIZE, NUM_COLOURS, PADDING)
+    pipeline_folder_individual(INPUT_FOLDER, BLOCK_SIZE, NUM_COLOURS, PADDING)
 
