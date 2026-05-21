@@ -87,13 +87,13 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--block_size", type=int, default=config.BLOCK_SIZE)
     parser.add_argument("--input_image", type=str, default=config.INPUT_IMAGE_PATH)
-    parser.add_argument("--input_folder", type=str, default=config.INPUT_FOLDER_PATH)
+    parser.add_argument("--folder", type=str, default=config.INPUT_FOLDER_NAME)
     parser.add_argument("--num_colours", type=int, default=config.NUM_COLOURS)
     parser.add_argument("--padding", type=int, default=config.PADDING)
     args = parser.parse_args()
 
     INPUT_IMAGE = args.input_image
-    INPUT_FOLDER = args.input_folder
+    INPUT_FOLDER = f"./inputs/{args.folder}/"
     BLOCK_SIZE = args.block_size
     NUM_COLOURS = args.num_colours
     PADDING = args.padding

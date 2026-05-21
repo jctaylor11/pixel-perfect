@@ -1,5 +1,7 @@
+
+INPUT_FOLDER_NAME = "astro_cat"
+
 INPUT_IMAGE_PATH = "./inputs/orange_hoodie/front.png"     # Must be in inputs/ folder
-INPUT_FOLDER_PATH = "./inputs/orange_hoodie/"
 
 BLOCK_SIZE = 13
 ALPHA_THRESHOLD = 10    # Filters out invisible pixels
