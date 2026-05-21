@@ -15,7 +15,7 @@ from stages.sample_blocks import sample_blocks
 from stages.quantise_colours import compute_centroids, quantise_to_centroids
 from stages.construct_blocks import construct_blocks
 from stages.place_on_canvas import place_on_canvas
-from stages.save_outputs import save_outputs
+from stages.save_outputs import save_clean_output, save_debug_outputs
 from stages.watermark_image import add_watermark
 import config
 
@@ -79,7 +79,8 @@ def pipeline_image(input_path, block_size, num_colours, padding):
     canvas_img = place_on_canvas(reconstructed_img, padding)
     watermarked_canvas_img = add_watermark(canvas_img)
 
-    save_outputs(input_path, cropped_img, block_size, reconstructed_img, watermarked_canvas_img)
+    # save_debug_outputs(input_path, cropped_img, block_size, reconstructed_img, watermarked_canvas_img)
+    save_clean_output(input_path, watermarked_canvas_img)
 
 
 if __name__ == "__main__":
@@ -98,6 +99,6 @@ if __name__ == "__main__":
     NUM_COLOURS = args.num_colours
     PADDING = args.padding
 
-    # pipeline_image(INPUT_IMAGE, BLOCK_SIZE, NUM_COLOURS, PADDING)
-    pipeline_folder(INPUT_FOLDER, BLOCK_SIZE, NUM_COLOURS, PADDING)
+    pipeline_image(INPUT_IMAGE, BLOCK_SIZE, NUM_COLOURS, PADDING)
+    # pipeline_folder(INPUT_FOLDER, BLOCK_SIZE, NUM_COLOURS, PADDING)
 

@@ -8,7 +8,15 @@ def build_output_path(input_path, slug):
     return output_path
 
 
-def save_outputs(input_path, cropped_img, block_size, reconstructed_img, canvas_img):
+def save_clean_output(input_path, watermarked_img):
+    input_path = Path(input_path)
+    output_dir = Path("outputs") / "individual"
+    output_dir.mkdir(parents=True, exist_ok=True)
+    output_filename = f"{input_path.parent.name}_{input_path.name}"
+    watermarked_img.save(output_dir / output_filename)
+
+
+def save_debug_outputs(input_path, cropped_img, block_size, reconstructed_img, canvas_img):
     # Original image cropped
     cropped_path = build_output_path(input_path, "cropped")
     cropped_img.save(cropped_path)
