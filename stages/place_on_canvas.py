@@ -8,10 +8,10 @@ def place_on_canvas(img, padding=100, canvas_size=(1080, 1350)):    # 1080 x 135
     available_w = canvas_w - 2 * padding
     available_h = canvas_h - 2 * padding
 
-    # Scale to fit within canvas without distortion by taking min
-    scale = min(available_w / img.width, available_h / img.height)
-    scaled_w = int(img.width * scale)
-    scaled_h = int(img.height * scale)
+    # Integer scale so every sprite block ends up the same number of canvas pixels
+    scale = max(1, min(available_w // img.width, available_h // img.height))
+    scaled_w = img.width * scale
+    scaled_h = img.height * scale
     scaled_img = img.resize((scaled_w, scaled_h), Image.NEAREST)    # Nearest so it doesn't interpolate colours - maintains sharp colour boundaries
 
     canvas = Image.new("RGBA", canvas_size, BACKGROUND_COLOUR)

@@ -85,8 +85,8 @@ def pipeline_image(input_path, block_size, num_colours, padding):
     canvas_img = place_on_canvas(reconstructed_img, padding)
     watermarked_canvas_img = add_watermark(canvas_img)
 
-    # save_debug_outputs(input_path, cropped_img, block_size, reconstructed_img, watermarked_canvas_img)
-    save_clean_output(input_path, watermarked_canvas_img)
+    save_debug_outputs(input_path, cropped_img, block_size, reconstructed_img, watermarked_canvas_img)
+    # save_clean_output(input_path, watermarked_canvas_img)
 
 
 if __name__ == "__main__":
