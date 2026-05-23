@@ -1,6 +1,5 @@
 
 INPUT_FOLDER_NAME = "astro_cat"
-
 INPUT_IMAGE_PATH = "./inputs/orange_hoodie/front.png"     # Must be in inputs/ folder
 
 BLOCK_SIZE = 13

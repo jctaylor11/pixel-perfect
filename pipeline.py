@@ -31,6 +31,8 @@ def pipeline_folder(folder_path, block_size, num_colours, padding):
     sprite_dict = {}
 
     for filename in os.listdir(folder_path):
+        if not filename.lower().endswith(('.png', '.jpg', '.jpeg')):
+            continue
         filepath = os.path.join(folder_path, filename)
         img_raw = Image.open(filepath)
         img_rgba = img_raw.convert('RGBA')
@@ -65,6 +67,8 @@ def pipeline_folder(folder_path, block_size, num_colours, padding):
 
 def pipeline_folder_individual(folder_path, block_size, num_colours, padding):
     for filename in os.listdir(folder_path):
+        if not filename.lower().endswith(('.png', '.jpg', '.jpeg')):
+            continue
         filepath = os.path.join(folder_path, filename)
         pipeline_image(filepath, block_size, num_colours, padding)
 
@@ -85,8 +89,8 @@ def pipeline_image(input_path, block_size, num_colours, padding):
     canvas_img = place_on_canvas(reconstructed_img, padding)
     watermarked_canvas_img = add_watermark(canvas_img)
 
-    save_debug_outputs(input_path, cropped_img, block_size, reconstructed_img, watermarked_canvas_img)
-    # save_clean_output(input_path, watermarked_canvas_img)
+    # save_debug_outputs(input_path, cropped_img, block_size, reconstructed_img, watermarked_canvas_img)
+    save_clean_output(input_path, watermarked_canvas_img)
 
 
 if __name__ == "__main__":
@@ -101,11 +105,12 @@ if __name__ == "__main__":
 
     INPUT_IMAGE = args.input_image
     INPUT_FOLDER = f"./inputs/{args.folder}/"
+    INDIVIDUAL_INPUTS = "./inputs/individual/"
     BLOCK_SIZE = args.block_size
     NUM_COLOURS = args.num_colours
     PADDING = args.padding
 
     # pipeline_image(INPUT_IMAGE, BLOCK_SIZE, NUM_COLOURS, PADDING)
-    # pipeline_folder(INPUT_FOLDER, BLOCK_SIZE, NUM_COLOURS, PADDING)
-    pipeline_folder_individual(INPUT_FOLDER, BLOCK_SIZE, NUM_COLOURS, PADDING)
+    pipeline_folder(INPUT_FOLDER, BLOCK_SIZE, NUM_COLOURS, PADDING)
+    pipeline_folder_individual(INDIVIDUAL_INPUTS, BLOCK_SIZE, NUM_COLOURS, PADDING)
 
