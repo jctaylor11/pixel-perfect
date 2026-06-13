@@ -113,4 +113,3 @@ if __name__ == "__main__":
     # pipeline_image(INPUT_IMAGE, BLOCK_SIZE, NUM_COLOURS, PADDING)
     pipeline_folder(INPUT_FOLDER, BLOCK_SIZE, NUM_COLOURS, PADDING)
     pipeline_folder_individual(INDIVIDUAL_INPUTS, BLOCK_SIZE, NUM_COLOURS, PADDING)
-
