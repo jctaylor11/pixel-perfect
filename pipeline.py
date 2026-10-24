@@ -1,14 +1,10 @@
 import argparse
 import os
 
-from dotenv import load_dotenv
 from PIL import Image
 from pydantic import BaseModel
 import numpy as np
 from numpy.typing import NDArray
-
-
-load_dotenv()
 
 from stages.find_bounds import find_bounds, crop_image
 from stages.sample_blocks import sample_blocks

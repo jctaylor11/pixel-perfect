@@ -211,12 +211,14 @@ __marimo__/
 
 # Inputs and outputs
 *.png
+!results-comparison/*.png
 
 # Archive 
 archive/
 archive_finals/
 
 # Notes
+notes/
 NOTES.md
 scratch.py
 
